@@ -1,0 +1,12 @@
+{
+  "name": "better-enum",
+  "version": "1.0.0",
+  "description": "Better Enum for TypeScript/Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
