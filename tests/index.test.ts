@@ -28,6 +28,10 @@ class Status extends BetterEnum {
   }
 }
 
+@InitEnum()
+class Dummy {
+}
+
 describe('BetterEnum Class', () => {
   it('should be a function', () => {
     assert.strictEqual(typeof BetterEnum, 'function');

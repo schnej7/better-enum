@@ -10,7 +10,7 @@ export default abstract class BetterEnum {
   constructor(..._: any[]) {
   }
 
-  static initEnum(enumClass: any): void {
+  static initEnum<T extends typeof BetterEnum>(enumClass: T): void {
     let subclassRegistry = this.getSubclassRegistry();
     if (!subclassRegistry) {
       subclassRegistry = new Map();
@@ -21,9 +21,8 @@ export default abstract class BetterEnum {
 
     for (const [key, value] of Object.entries(enumClass)) {
       if (value instanceof enumClass) {
-        const typedValue = value as BetterEnum;
-        typedValue.name = key;
-        subclassRegistry?.set(key, typedValue);
+        value.name = key;
+        subclassRegistry?.set(key, value);
       }
     }
   }
@@ -44,7 +43,10 @@ export default abstract class BetterEnum {
 // Decorator: Automatically calls initEnum at class definition time
 export function InitEnum(): ClassDecorator {
   return (target) => {
-    // Delay to ensure all static fields are defined
-    BetterEnum.initEnum(target);
+    if (target.prototype instanceof BetterEnum) {
+      BetterEnum.initEnum(target as unknown as typeof BetterEnum);
+    } else {
+      console.error('InitEnum decorating non-enum class', target);
+    }
   };
 }
