@@ -33,28 +33,33 @@ describe('BetterEnum Class', () => {
     assert.strictEqual(typeof BetterEnum, 'function');
   });
 
-  it('values should return all values', () => {
+  it('value methods', () => {
+    assert.deepStrictEqual(Status.ON.getIsOn(), true);
+    assert.deepStrictEqual(Status.OFF.getIsOn(), false);
+  });
+
+  it('static values()', () => {
     const values = Status.values();
     for (let value of values) {
-      value.getIsOn();
       assert.deepStrictEqual(typeof value.getIsOn(), 'boolean');
     }
     assert.deepStrictEqual(Status.values(), [ Status.ON, Status.OFF ]);
   });
 
-  it('values methods should return the correct result', () => {
-    assert.deepStrictEqual(Status.ON.getIsOn(), true);
-    assert.deepStrictEqual(Status.OFF.getIsOn(), false);
-  });
-
-  it('toString methods should return the static member name', () => {
+  it('static toString()', () => {
     assert.deepStrictEqual(Status.ON.toString(), 'ON');
     assert.deepStrictEqual(Status.OFF.toString(), 'OFF');
+    assert.deepStrictEqual("" + Status.ON, 'ON');
+    assert.deepStrictEqual("" + Status.OFF, 'OFF');
   });
 
-  it('fromString should return the correct result', () => {
-    assert.deepStrictEqual(Status.fromString('ON'), Status.ON);
-    assert.deepStrictEqual(Status.fromString('OFF'), Status.OFF);
+  it('static fromString()', () => {
+    const ON = Status.fromString('ON');
+    assert.deepStrictEqual(ON, Status.ON);
+    assert.deepStrictEqual(ON?.getIsOn(), true);
+    const OFF = Status.fromString('OFF');
+    assert.deepStrictEqual(OFF, Status.OFF);
+    assert.deepStrictEqual(OFF?.getIsOn(), false);
     assert.deepStrictEqual(Status.fromString('ABSENT'), undefined);
   });
 });

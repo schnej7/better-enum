@@ -32,8 +32,8 @@ export default abstract class BetterEnum<T extends BetterEnum<T>> {
     return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
   }
 
-  static fromString<T extends BetterEnum<T>>(key: string): T {
-    return this.getSubclassRegistry()?.get(key) as T;
+  static fromString<T extends typeof BetterEnum<any>>(this: T, key: string): InstanceType<T> | undefined {
+    return this.getSubclassRegistry()?.get(key) as InstanceType<T> | undefined;
   }
 
   toString(): string {
