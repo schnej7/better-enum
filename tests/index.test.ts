@@ -1,4 +1,4 @@
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert';
 
 import BetterEnum from '../src/index.ts';
@@ -11,9 +11,9 @@ describe('NPM Package', () => {
 });
 
 class Status extends BetterEnum {
-  static readonly ON = new Status(true);
+  static readonly ON = Object.freeze(new Status(true));
 
-  static readonly OFF = new Status(false);
+  static readonly OFF = Object.freeze(new Status(false));
 
   private isOn: boolean;
 
