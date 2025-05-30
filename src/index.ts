@@ -3,21 +3,23 @@ export default abstract class BetterEnum {
 
   private name!: string;
 
-  private static getSubclassRegistry() {
-    return this._registry.get(this.constructor);
-  }
-
   constructor(..._: any[]) {
   }
 
+  toString(): string {
+    return this.name;
+  }
+
+  static fromString<T extends typeof BetterEnum>(this: T, key: string): InstanceType<T> | undefined {
+    return this.getSubclassRegistry()?.get(key) as InstanceType<T> | undefined;
+  }
+
+  static values<T extends typeof BetterEnum>(this: T): InstanceType<T>[] {
+    return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
+  }
+
   static initEnum<T extends typeof BetterEnum>(enumClass: T): void {
-    let subclassRegistry = this.getSubclassRegistry();
-    if (!subclassRegistry) {
-      subclassRegistry = new Map();
-      this._registry.set(this.constructor, subclassRegistry);
-    } else {
-      console.error(`(${enumClass}) initEnum called multiple times`);
-    }
+    const subclassRegistry = this.initSubclassRegistry(enumClass);
 
     for (const [key, value] of Object.entries(enumClass)) {
       if (value instanceof enumClass) {
@@ -27,16 +29,19 @@ export default abstract class BetterEnum {
     }
   }
 
-  static values<T extends typeof BetterEnum>(this: T): InstanceType<T>[] {
-    return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
+  private static getSubclassRegistry() {
+    return this._registry.get(this.constructor);
   }
 
-  static fromString<T extends typeof BetterEnum>(this: T, key: string): InstanceType<T> | undefined {
-    return this.getSubclassRegistry()?.get(key) as InstanceType<T> | undefined;
-  }
-
-  toString(): string {
-    return this.name;
+  private static initSubclassRegistry<T extends typeof BetterEnum>(enumClass: T) {
+    let subclassRegistry = this.getSubclassRegistry();
+    if (!subclassRegistry) {
+      subclassRegistry = new Map();
+      this._registry.set(this.constructor, subclassRegistry);
+    } else {
+      console.error(`(${enumClass}) initEnum called multiple times`);
+    }
+    return subclassRegistry;
   }
 }
 
