@@ -7,7 +7,7 @@ export default abstract class BetterEnum<T extends BetterEnum<T>> {
     return this._registry.get(this.constructor);
   }
 
-  protected constructor() {
+  constructor(..._: any[]) {
   }
 
   static initEnum<T extends BetterEnum<T>>(enumClass: any): void {
@@ -28,8 +28,8 @@ export default abstract class BetterEnum<T extends BetterEnum<T>> {
     }
   }
 
-  static values<T extends BetterEnum<T>>(): T[] {
-    return [...(this.getSubclassRegistry()?.values()) || []] as T[];
+  static values<T extends typeof BetterEnum<any>>(this: T): InstanceType<T>[] {
+    return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
   }
 
   static fromString<T extends BetterEnum<T>>(key: string): T {

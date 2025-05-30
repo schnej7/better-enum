@@ -34,7 +34,7 @@ describe('BetterEnum Class', () => {
   });
 
   it('values should return all values', () => {
-    const values = Status.values<Status>();
+    const values = Status.values();
     for (let value of values) {
       value.getIsOn();
       assert.deepStrictEqual(typeof value.getIsOn(), 'boolean');
