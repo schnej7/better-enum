@@ -4,6 +4,20 @@ export default abstract class BetterEnum {
   private name!: string;
 
   constructor(..._: any[]) {
+    const subclass = new.target;
+
+    // Delay execution so all static fields are initialized
+    queueMicrotask(() => {
+      const subclassRegistry = BetterEnum.initSubclassRegistry(subclass);
+      for (const [key, value] of Object.entries(subclass)) {
+        if (value === this && !subclassRegistry.has(key)) {
+          this.name = key;
+          Object.freeze(this);
+          subclassRegistry.set(key, this);
+          break;
+        }
+      }
+    });
   }
 
   toString(): string {
@@ -15,43 +29,20 @@ export default abstract class BetterEnum {
   }
 
   static values<T extends typeof BetterEnum>(this: T): InstanceType<T>[] {
-    return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
-  }
-
-  static initEnum<T extends typeof BetterEnum>(enumClass: T): void {
-    const subclassRegistry = this.initSubclassRegistry(enumClass);
-
-    for (const [key, value] of Object.entries(enumClass)) {
-      if (value instanceof enumClass) {
-        value.name = key;
-        subclassRegistry?.set(key, value);
-      }
-    }
+    return [...(this.getSubclassRegistry()?.values() ?? [])] as InstanceType<T>[];
   }
 
   private static getSubclassRegistry() {
-    return this._registry.get(this.constructor);
+    return this._registry.get(this);
   }
 
-  private static initSubclassRegistry<T extends typeof BetterEnum>(enumClass: T) {
-    let subclassRegistry = this.getSubclassRegistry();
+  private static initSubclassRegistry(subclass: typeof BetterEnum) {
+    let subclassRegistry = BetterEnum._registry.get(subclass);
     if (!subclassRegistry) {
       subclassRegistry = new Map();
-      this._registry.set(this.constructor, subclassRegistry);
-    } else {
-      console.error(`(${enumClass}) initEnum called multiple times`);
+      BetterEnum._registry.set(subclass, subclassRegistry);
     }
     return subclassRegistry;
   }
 }
 
-// Decorator: Automatically calls initEnum at class definition time
-export function InitEnum(): ClassDecorator {
-  return (target) => {
-    if (target.prototype instanceof BetterEnum) {
-      BetterEnum.initEnum(target as unknown as typeof BetterEnum);
-    } else {
-      console.error('InitEnum decorating non-enum class', target);
-    }
-  };
-}

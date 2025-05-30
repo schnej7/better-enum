@@ -1,7 +1,7 @@
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert';
 
-import BetterEnum, { InitEnum } from '../src/index.ts';
+import BetterEnum from '../src/index.ts';
 import npmPackage from '../src/index.ts';
 
 describe('NPM Package', () => {
@@ -10,13 +10,12 @@ describe('NPM Package', () => {
   });
 });
 
-@InitEnum()
 class Status extends BetterEnum {
   static readonly ON = new Status(true);
 
   static readonly OFF = new Status(false);
 
-  isOn: boolean;
+  private isOn: boolean;
 
   constructor(isOn: boolean) {
     super();
@@ -26,10 +25,6 @@ class Status extends BetterEnum {
   getIsOn() {
     return this.isOn;
   }
-}
-
-@InitEnum()
-class Dummy {
 }
 
 describe('BetterEnum Class', () => {
