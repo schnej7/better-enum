@@ -1,5 +1,5 @@
-export default abstract class BetterEnum<T extends BetterEnum<T>> {
-  private static _registry = new Map<Function, Map<string, BetterEnum<any>>>();
+export default abstract class BetterEnum {
+  private static _registry = new Map<Function, Map<string, BetterEnum>>();
 
   private name!: string;
 
@@ -10,7 +10,7 @@ export default abstract class BetterEnum<T extends BetterEnum<T>> {
   constructor(..._: any[]) {
   }
 
-  static initEnum<T extends BetterEnum<T>>(enumClass: any): void {
+  static initEnum(enumClass: any): void {
     let subclassRegistry = this.getSubclassRegistry();
     if (!subclassRegistry) {
       subclassRegistry = new Map();
@@ -21,18 +21,18 @@ export default abstract class BetterEnum<T extends BetterEnum<T>> {
 
     for (const [key, value] of Object.entries(enumClass)) {
       if (value instanceof enumClass) {
-        const typedValue = value as T;
+        const typedValue = value as BetterEnum;
         typedValue.name = key;
         subclassRegistry?.set(key, typedValue);
       }
     }
   }
 
-  static values<T extends typeof BetterEnum<any>>(this: T): InstanceType<T>[] {
+  static values<T extends typeof BetterEnum>(this: T): InstanceType<T>[] {
     return [...(this.getSubclassRegistry()?.values()) || []] as InstanceType<T>[];
   }
 
-  static fromString<T extends typeof BetterEnum<any>>(this: T, key: string): InstanceType<T> | undefined {
+  static fromString<T extends typeof BetterEnum>(this: T, key: string): InstanceType<T> | undefined {
     return this.getSubclassRegistry()?.get(key) as InstanceType<T> | undefined;
   }
 

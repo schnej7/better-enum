@@ -11,7 +11,7 @@ describe('NPM Package', () => {
 });
 
 @InitEnum()
-class Status extends BetterEnum<Status> {
+class Status extends BetterEnum {
   static readonly ON = new Status(true);
 
   static readonly OFF = new Status(false);
