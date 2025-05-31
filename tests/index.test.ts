@@ -4,39 +4,39 @@ import assert from 'node:assert';
 import BetterEnum from '../src/index.ts';
 
 class Status extends BetterEnum {
-  static readonly ON = Object.freeze(new Status(true));
+  static LOADING = new Status(true);
 
-  static readonly OFF = Object.freeze(new Status(false));
+  static READY = new Status(false);
 
-  private isOn: boolean;
+  private isBlocked: boolean;
 
-  constructor(isOn: boolean) {
+  constructor(isBlocked: boolean) {
     super();
-    this.isOn = isOn;
+    this.isBlocked = isBlocked;
   }
 
-  getIsOn() {
-    return this.isOn;
+  getIsBlocked() {
+    return this.isBlocked;
   }
 }
 
 type MathFunc = (a: number, b: number) => number;
 
 class RCMascot extends BetterEnum {
-  public static readonly SNAP = new RCMascot({
+  public static readonly SNAP = Object.freeze(new RCMascot({
     name: 'Snap',
     doMath: (a: number, b: number) => a + b,
-  });
+  }));
 
-  public static readonly CRACKLE = new RCMascot({
+  public static readonly CRACKLE = Object.freeze(new RCMascot({
     name: 'Crackle',
     doMath: (a: number, b: number) => a - b,
-  });
+  }));
 
-  public static readonly POP = new RCMascot({
+  public static readonly POP = Object.freeze(new RCMascot({
     name: 'Pop',
     doMath: (a: number, b: number) => a * b,
-  });
+  }));
 
   private name: string;
 
@@ -54,7 +54,7 @@ class RCMascot extends BetterEnum {
 
   doMath(a: number, b: number) {
     console.log('Functionality consistent across all values here');
-    this.doMathImpl(a, b);
+    return this.doMathImpl(a, b);
   }
 }
 
@@ -64,19 +64,23 @@ describe('BetterEnum Class', () => {
   });
 
   it('value methods', () => {
-    assert.deepStrictEqual(Status.ON.getIsOn(), true);
-    assert.deepStrictEqual(Status.OFF.getIsOn(), false);
+    assert.deepStrictEqual(Status.LOADING.getIsBlocked(), true);
+    assert.deepStrictEqual(Status.READY.getIsBlocked(), false);
 
     assert.deepStrictEqual(RCMascot.SNAP.getName(), 'Snap');
     assert.deepStrictEqual(RCMascot.CRACKLE.getName(), 'Crackle');
     assert.deepStrictEqual(RCMascot.POP.getName(), 'Pop');
+
+    assert.deepStrictEqual(RCMascot.SNAP.doMath(1,2), 3);
+    assert.deepStrictEqual(RCMascot.CRACKLE.doMath(1,2), -1);
+    assert.deepStrictEqual(RCMascot.POP.doMath(1,2), 2);
   });
 
   it('static values()', () => {
     for (let value of Status.values()) {
-      assert.deepStrictEqual(typeof value.getIsOn(), 'boolean');
+      assert.deepStrictEqual(typeof value.getIsBlocked(), 'boolean');
     }
-    assert.deepStrictEqual(Status.values(), [ Status.ON, Status.OFF ]);
+    assert.deepStrictEqual(Status.values(), [ Status.LOADING, Status.READY ]);
 
     for (let value of RCMascot.values()) {
       assert.deepStrictEqual(typeof value.getName(), 'string');
@@ -85,10 +89,10 @@ describe('BetterEnum Class', () => {
   });
 
   it('static toString()', () => {
-    assert.deepStrictEqual(Status.ON.toString(), 'ON');
-    assert.deepStrictEqual(Status.OFF.toString(), 'OFF');
-    assert.deepStrictEqual("" + Status.ON, 'ON');
-    assert.deepStrictEqual("" + Status.OFF, 'OFF');
+    assert.deepStrictEqual(Status.LOADING.toString(), 'LOADING');
+    assert.deepStrictEqual(Status.READY.toString(), 'READY');
+    assert.deepStrictEqual("" + Status.LOADING, 'LOADING');
+    assert.deepStrictEqual("" + Status.READY, 'READY');
 
     assert.deepStrictEqual(RCMascot.SNAP.toString(), 'SNAP');
     assert.deepStrictEqual(RCMascot.CRACKLE.toString(), 'CRACKLE');
@@ -99,12 +103,12 @@ describe('BetterEnum Class', () => {
   });
 
   it('static fromString()', () => {
-    const ON = Status.fromString('ON');
-    assert.deepStrictEqual(ON, Status.ON);
-    assert.deepStrictEqual(ON?.getIsOn(), true);
-    const OFF = Status.fromString('OFF');
-    assert.deepStrictEqual(OFF, Status.OFF);
-    assert.deepStrictEqual(OFF?.getIsOn(), false);
+    const LOADING = Status.fromString('LOADING');
+    assert.deepStrictEqual(LOADING, Status.LOADING);
+    assert.deepStrictEqual(LOADING.getIsBlocked(), true);
+    const READY = Status.fromString('READY');
+    assert.deepStrictEqual(READY, Status.READY);
+    assert.deepStrictEqual(READY.getIsBlocked(), false);
     assert.deepStrictEqual(Status.fromString('ABSENT'), undefined);
 
     const SNAP = RCMascot.fromString('SNAP');
