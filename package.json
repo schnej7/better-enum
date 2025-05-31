@@ -18,7 +18,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/schnej7/better-enum"
+    "url": "git+https://github.com/schnej7/better-enum.git"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
