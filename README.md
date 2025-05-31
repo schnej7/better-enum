@@ -169,3 +169,4 @@ node --test
 ## 🙌 Acknowledgments
 
 Inspired by Java-style enums with an ergonomic TypeScript twist.
+
