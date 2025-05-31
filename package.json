@@ -18,7 +18,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/schnej7/Debouncer"
+    "url": "https://github.com/schnej7/better-enum"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
