@@ -33,8 +33,9 @@ JavaScript/TypeScript `enum`s are limited: they can't hold methods, complex data
 ### Define a Custom Enum
 
 ```ts
-import BetterEnum from 'better-enum';
+import BetterEnum, { RegisterEnum } from 'better-enum';
 
+@RegisterEnum
 class Status extends BetterEnum {
   static LOADING = new Status(true);
   static READY = new Status(false);
@@ -77,6 +78,7 @@ Status.fromString("READY") === Status.READY; // true
 ## 🎓 Advanced Example
 
 ```ts
+@RegisterEnum
 class RCMascot extends BetterEnum {
   public static readonly SNAP = Object.freeze(new RCMascot({
     name: 'Snap',
@@ -159,10 +161,26 @@ node --test
 
 ---
 
+## ⚙️ Configuration
+
+To use the `@RegisterEnum` decorator, ensure your `tsconfig.json` includes:
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
+---
+
 ## ⚠️ Caveats
 
+* Classes extending `BetterEnum` must use the `@RegisterEnum` decorator for automatic registration.
 * Static fields must be declared *before* runtime use for registration to succeed.
-* Instance registration happens asynchronously via `queueMicrotask`. Avoid depending on `values()` or `fromString()` too early (e.g., during static field initialization of other members).
+* The `@RegisterEnum` decorator requires TypeScript with `experimentalDecorators: true` in your `tsconfig.json`.
 
 ---
 

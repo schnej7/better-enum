@@ -3,24 +3,26 @@ type SubclassRegistry = {
   reverse: Map<BetterEnum, string>;
 };
 
+/**
+ * Class decorator that automatically registers enum instances after class definition is complete.
+ * This eliminates the need for queueMicrotask in the constructor.
+ */
+export function RegisterEnum<T extends new (...args: any[]) => BetterEnum>(constructor: T): T {
+  // Register all static enum instances immediately after class definition
+  const subclassRegistry = BetterEnum.initSubclassRegistry(constructor as any);
+  
+  for (const [key, value] of Object.entries(constructor)) {
+    if (value instanceof BetterEnum && !subclassRegistry.forward.has(key)) {
+      subclassRegistry.forward.set(key, value);
+      subclassRegistry.reverse.set(value, key);
+    }
+  }
+  
+  return constructor;
+}
+
 export default abstract class BetterEnum {
   private static _registry = new Map<Function, SubclassRegistry>();
-
-  constructor(..._: any[]) {
-    const subclass = new.target;
-
-    // Delay execution so all static fields are initialized
-    queueMicrotask(() => {
-      const subclassRegistry = BetterEnum.initSubclassRegistry(subclass);
-      for (const [key, value] of Object.entries(subclass)) {
-        if (value === this && !subclassRegistry.forward.has(key)) {
-          subclassRegistry.forward.set(key, this);
-          subclassRegistry.reverse.set(this, key);
-          break;
-        }
-      }
-    });
-  }
 
   toString(): string {
     const subclassRegistry = (this.constructor as typeof BetterEnum).getSubclassRegistry();
@@ -44,7 +46,7 @@ export default abstract class BetterEnum {
     return this._registry.get(this);
   }
 
-  private static initSubclassRegistry(subclass: typeof BetterEnum) {
+  static initSubclassRegistry(subclass: typeof BetterEnum) {
     let subclassRegistry = BetterEnum._registry.get(subclass);
     if (!subclassRegistry) {
       subclassRegistry = {

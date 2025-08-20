@@ -1,8 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 
-import BetterEnum from '../src/index.ts';
+import BetterEnum, { RegisterEnum } from '../src/index.ts';
 
+@RegisterEnum
 class Status extends BetterEnum {
   static LOADING = new Status(true);
 
@@ -22,6 +23,7 @@ class Status extends BetterEnum {
 
 type MathFunc = (a: number, b: number) => number;
 
+@RegisterEnum
 class RCMascot extends BetterEnum {
   public static readonly SNAP = Object.freeze(new RCMascot({
     name: 'Snap',
